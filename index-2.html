@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GoBros — Quote Generator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #f5f4f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2rem 1rem;
+      color: #1a1a1a;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+      padding: 2rem;
+      width: 100%;
+      max-width: 680px;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .logo-circle {
+      width: 42px;
+      height: 42px;
+      background: #c0392b;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-text {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-sub {
+      font-size: 12px;
+      color: #888;
+      margin-top: 1px;
+    }
+
+    h2 {
+      font-size: 15px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    h2:first-of-type { margin-top: 0; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .field { margin-bottom: 12px; }
+
+    label {
+      font-size: 12px;
+      color: #666;
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    select {
+      width: 100%;
+      height: 38px;
+      padding: 0 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      color: #1a1a1a;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus, select:focus { border-color: #c0392b; box-shadow: 0 0 0 3px rgba(192,57,43,0.08); }
+
+    input[readonly] {
+      background: #f9f9f9;
+      color: #555;
+      cursor: not-allowed;
+    }
+
+    .rate-wrap { position: relative; }
+    .auto-badge {
+      display: none;
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      font-weight: 600;
+      background: #eafaf1;
+      color: #27ae60;
+      padding: 2px 7px;
+      border-radius: 4px;
+      letter-spacing: 0.3px;
+    }
+
+    .radio-group { display: flex; gap: 16px; margin-top: 4px; }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #333;
+      text-transform: none;
+      letter-spacing: 0;
+      font-weight: 400;
+      cursor: pointer;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #eee;
+      margin: 1.25rem 0;
+    }
+
+    .btn-generate {
+      width: 100%;
+      padding: 11px;
+      background: #c0392b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      letter-spacing: 0.2px;
+      transition: background 0.15s, transform 0.1s;
+    }
+
+    .btn-generate:hover { background: #a93226; }
+    .btn-generate:active { transform: scale(0.99); }
+
+    #output { display: none; margin-top: 1.5rem; }
+
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .output-label { font-size: 12px; color: #888; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    .btn-copy {
+      font-size: 12px;
+      padding: 5px 14px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      background: #fff;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.15s;
+    }
+
+    .btn-copy:hover { background: #f5f5f5; }
+
+    #preview {
+      background: #fafafa;
+      border: 1px solid #e8e8e8;
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-wrap;
+      font-family: 'Courier New', monospace;
+      color: #1a1a1a;
+    }
+
+    @media (max-width: 520px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .card { padding: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+
+  <div class="logo-row">
+    <div class="logo-circle">GO<br>BROS</div>
+    <div>
+      <div class="logo-text">GoBros</div>
+      <div class="logo-sub">Quote Generator</div>
+    </div>
+  </div>
+
+  <h2>Customer details</h2>
+  <div class="grid-2">
+    <div>
+      <label>First name</label>
+      <input type="text" id="fname" placeholder="Maher" />
+    </div>
+    <div>
+      <label>Email</label>
+      <input type="text" id="email" placeholder="maher@email.com" />
+    </div>
+  </div>
+
+  <hr class="divider" />
+  <h2>Rental details</h2>
+
+  <div class="grid-2">
+    <div>
+      <label>Item</label>
+      <select id="item" onchange="autoRate()">
+        <option value="">— Select an item —</option>
+        <option value="DJI Osmo 360" data-rate="85">DJI Osmo 360 — $85/day</option>
+        <option value="DJI Osmo Pocket 3" data-rate="70">DJI Osmo Pocket 3 — $70/day</option>
+        <option value="GoPro HERO 11 Black Mini" data-rate="35">GoPro HERO 11 Black Mini — $35/day</option>
+        <option value="DJI Osmo Action 5 Pro" data-rate="60">DJI Osmo Action 5 Pro — $60/day</option>
+        <option value="Insta360 X5" data-rate="75">Insta360 X5 — $75/day</option>
+        <option value="GoPro HERO 13 Black" data-rate="55">GoPro HERO 13 Black — $55/day</option>
+      </select>
+    </div>
+    <div>
+      <label>Daily rate ($)</label>
+      <div class="rate-wrap">
+        <input type="number" id="rate" placeholder="Auto-filled" readonly />
+        <span class="auto-badge" id="rate-badge">AUTO</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div>
+      <label>Rental start</label>
+      <input type="date" id="start" />
+    </div>
+    <div>
+      <label>Rental end</label>
+      <input type="date" id="end" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Hold deposit ($)</label>
+    <input type="number" id="deposit" placeholder="450" style="max-width:200px;" />
+  </div>
+
+  <hr class="divider" />
+  <h2>Fulfillment</h2>
+
+  <div class="field">
+    <div class="radio-group">
+      <label><input type="radio" name="method" value="pickup" onchange="toggleMethod()" checked /> Pickup</label>
+      <label><input type="radio" name="method" value="delivery" onchange="toggleMethod()" /> Delivery</label>
+    </div>
+  </div>
+
+  <div id="pickup-fields">
+    <div class="grid-2">
+      <div>
+        <label>Pickup address</label>
+        <input type="text" id="pickup-address" placeholder="95 Crestmont Drive" />
+      </div>
+      <div>
+        <label>Pickup time</label>
+        <input type="text" id="pickup-time" placeholder="e.g. 9:00 – 10:00 PM" />
+      </div>
+    </div>
+  </div>
+
+  <div id="delivery-fields" style="display:none;">
+    <div class="grid-3">
+      <div>
+        <label>Delivery address</label>
+        <input type="text" id="delivery-address" placeholder="Customer's address" />
+      </div>
+      <div>
+        <label>Delivery time</label>
+        <input type="text" id="delivery-time" placeholder="e.g. 2:00 – 3:00 PM" />
+      </div>
+      <div>
+        <label>Delivery fee ($)</label>
+        <input type="number" id="delivery-fee" placeholder="20" />
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-generate" onclick="generate()">Generate email</button>
+
+  <div id="output">
+    <div class="output-header">
+      <span class="output-label">Email preview</span>
+      <button class="btn-copy" onclick="copyEmail()" id="copybtn">Copy</button>
+    </div>
+    <div id="preview"></div>
+  </div>
+
+</div>
+
+<script>
+  function autoRate() {
+    const sel = document.getElementById('item');
+    const opt = sel.options[sel.selectedIndex];
+    const rate = opt.getAttribute('data-rate');
+    const rateInput = document.getElementById('rate');
+    const badge = document.getElementById('rate-badge');
+    if (rate) {
+      rateInput.value = rate;
+      badge.style.display = 'block';
+    } else {
+      rateInput.value = '';
+      badge.style.display = 'none';
+    }
+  }
+
+  function toggleMethod() {
+    const method = document.querySelector('input[name="method"]:checked').value;
+    document.getElementById('pickup-fields').style.display = method === 'pickup' ? 'block' : 'none';
+    document.getElementById('delivery-fields').style.display = method === 'delivery' ? 'block' : 'none';
+  }
+
+  function formatDate(d) {
+    if (!d) return '___';
+    const dt = new Date(d + 'T00:00:00');
+    return dt.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: '2-digit' });
+  }
+
+  function calcDays(s, e) {
+    if (!s || !e) return 1;
+    const diff = (new Date(e) - new Date(s)) / (1000 * 60 * 60 * 24);
+    return diff > 0 ? diff : 1;
+  }
+
+  function generate() {
+    const fname = document.getElementById('fname').value || '___';
+    const item = document.getElementById('item').value || '___';
+    const start = document.getElementById('start').value;
+    const end = document.getElementById('end').value;
+    const rate = parseFloat(document.getElementById('rate').value) || 0;
+    const deposit = parseFloat(document.getElementById('deposit').value) || 450;
+    const days = calcDays(start, end);
+    const method = document.querySelector('input[name="method"]:checked').value;
+    const deliveryFee = method === 'delivery' ? (parseFloat(document.getElementById('delivery-fee').value) || 0) : 0;
+    const subtotal = (rate * days).toFixed(2);
+    const total = (rate * days + deliveryFee).toFixed(2);
+
+    let fulfillmentBlock = '';
+    if (method === 'pickup') {
+      const addr = document.getElementById('pickup-address').value || '___';
+      const time = document.getElementById('pickup-time').value || '___';
+      fulfillmentBlock = `Pickup Location: ${addr}\nPickup Time: ${time}`;
+    } else {
+      const addr = document.getElementById('delivery-address').value || '___';
+      const time = document.getElementById('delivery-time').value || '___';
+      fulfillmentBlock = `Delivery Address: ${addr}\nDelivery Time: ${time}`;
+    }
+
+    let pricingLines = `Subtotal: $${subtotal}`;
+    if (deliveryFee > 0) {
+      pricingLines += `\nDelivery Fee: $${deliveryFee.toFixed(2)}\nTotal: $${total}`;
+    }
+
+    const body =
+`Hi ${fname},
+
+Thank you for your interest! Please find your rental quote details below.
+
+RENTAL QUOTE SUMMARY
+Item: ${item}
+Rental Start: ${formatDate(start)}
+Rental End: ${formatDate(end)}
+Duration: ${days} Day${days !== 1 ? 's' : ''}
+Daily Rate: $${rate.toFixed(2)}
+${pricingLines}
+
+${method.charAt(0).toUpperCase() + method.slice(1)} Details
+${fulfillmentBlock}
+
+A hold deposit of $${deposit.toFixed(2)} is required at the time of booking.
+
+To confirm your booking, please complete our Equipment Rental Agreement & Liability Waiver:
+https://www.jotform.com/260821332911247
+
+You'll need the following to complete the form:
+- Your full name, home address, phone number, and email
+- A photo or scan of a valid government-issued ID
+
+Please note:
+- Equipment must be returned in the same condition as received.
+- Late returns are subject to an additional day's rental fee.
+- Proof of ID and credit card (in your name) are required at pickup.
+
+If you have any questions or would like to make changes to your rental, don't hesitate to reach out.
+
+We look forward to working with you!
+
+Best regards,
+Anas Alkassim
+GoBros Support`;
+
+    document.getElementById('preview').textContent = body;
+    document.getElementById('output').style.display = 'block';
+    document.getElementById('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function copyEmail() {
+    const text = document.getElementById('preview').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('copybtn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
+</script>
+</body>
+</html>
